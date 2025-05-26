@@ -1,5 +1,5 @@
 [project]
-name = "202502-pdf-colpali-demo"
+name = "multimodal-pdfs"
 version = "0.1.0"
 description = "Demo app showing the power of multimodal models"
 readme = "README.md"
