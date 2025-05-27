@@ -5,9 +5,14 @@ description = "Demo app showing the power of multimodal models"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "accelerate>=1.7.0",
+    "colpali-engine>=0.3.0,<0.4.0",
+    "h5py>=3.13.0",
     "pdf2image>=1.17.0",
     "pillow>=11.2.1",
     "python-dotenv>=1.1.0",
     "streamlit>=1.45.1",
+    "torch<=2.5",
+    "transformers",
     "weaviate-client>=4.14.4",
 ]
