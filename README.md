@@ -10,9 +10,18 @@ Recommended method:
 
 ### Set up `.env` file
 
+Create a free Weaviate Cloud Sandbox, and add the details here:
+
 ```
 APP_WEAVIATE_CLOUD_URL=YOUR_WEAVIATE_URL
 APP_WEAVIATE_CLOUD_APIKEY=YOUR_WEAVIATE_APIKEY
+```
+
+The app also uses a VLM (OpenAI GPT-4o by default).
+
+Add your OpenAI key here:
+```
+APP_OPENAI_API_KEY=YOUR_WEAVIATE_APIKEY
 ```
 
 ### Populate your database
