@@ -4,22 +4,17 @@ from PIL import Image
 from helpers import (
     render_svg_file,
     WEAVIATE_COLLECTION_NAME,
-    IMG_DIR
+    get_model_and_processor,
+    text_to_colpali
 )
 import weaviate
 from weaviate.classes.query import MetadataQuery
 from weaviate.classes.init import Auth
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
-# client = weaviate.connect_to_local(
-#     headers={
-#         "X-Cohere-Api-Key": os.environ["COHERE_APIKEY"]
-#     }
-# )
-
-# Not necessary as secrets loaded from .streamlit/secrets.toml
-# from dotenv import load_dotenv
-# load_dotenv()
+model, processor = get_model_and_processor()
 
 # Initialize session state for query
 if 'query' not in st.session_state:
@@ -28,9 +23,6 @@ if 'query' not in st.session_state:
 client = weaviate.connect_to_weaviate_cloud(
     cluster_url=os.environ["APP_WEAVIATE_CLOUD_URL"],
     auth_credentials=Auth.api_key(os.environ["APP_WEAVIATE_CLOUD_APIKEY"]),
-    headers={
-        "X-Cohere-Api-Key": os.environ["APP_COHERE_API_KEY"]
-    }
 )
 
 st.title("Weaviate + Multimodal Image Search")
@@ -42,10 +34,11 @@ st.markdown(
 # Function to perform search
 def search_images(query, weaviate_client, top_k=6):
     pdfs = weaviate_client.collections.get(name=WEAVIATE_COLLECTION_NAME)
+    query_vector = text_to_colpali([query], model=model, processor=processor)[0]
 
-    response = pdfs.query.near_text(
-        query=query,
-        target_vector="cohere",
+    response = pdfs.query.near_vector(
+        near_vector=query_vector,
+        target_vector="colpali",
         limit=top_k,
         return_metadata=MetadataQuery(distance=True),
     )
@@ -123,7 +116,7 @@ if (search_button or len(query) > 0) and query.strip():
                     try:
                         # Display the image if it exists
                         image_path_str = result.properties["filepath"]
-                        image_path = Path(IMG_DIR) / Path(image_path_str)
+                        image_path = Path(image_path_str)
                         if image_path.exists():
                             img = Image.open(image_path)
                             st.image(
